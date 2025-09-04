@@ -3,26 +3,27 @@ import questionRoute from "./routes/questionRoute.mjs";
 import answerRoute from "./routes/answerRoute.mjs";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+// สำหรับ ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
-const port = 4000;
 
-// โหลด swagger.yaml
-const swaggerDocument = YAML.load("./swagger.yaml");
+// โหลด swagger.yaml แบบ absolute path
+const swaggerDocument = YAML.load(join(__dirname, "swagger.yaml"));
 
-// ใช้ swagger.yaml เปิด Swagger UI
+// Middleware
+app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.use(express.json());
-
-app.get("/test", (req, res) => {
-  return res.json("Server API is working 🚀");
-});
-
+// Routes
 app.use("/api/question", questionRoute);
 app.use("/api/answer", answerRoute);
 
-// app.listen(port, () => {
-//   console.log(`Server is running at ${port}`);
-// });
+app.get("/test", (req, res) => res.json("Server API is working 🚀"));
+
+// **สำคัญ: ลบ app.listen() บน Serverless**
 export default app;

@@ -2,7 +2,7 @@ import connectionPool from "../db/db.mjs";
 
 // create answer
 export const createAnswer = async (answer) => {
-  const query = `INSERT INTO answers (question_id,content) VALUES ($1,$2)`;
+  const query = `INSERT INTO answers (question_id,content) VALUES ($1,$2) RETURNING *`;
   const values = [answer.question_id, answer.content];
   const result = await connectionPool.query(query, values);
   return result.rows[0];

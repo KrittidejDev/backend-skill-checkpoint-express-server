@@ -2,7 +2,7 @@ import connectionPool from "../db/db.mjs";
 
 // create question
 export const createQuestion = async (question) => {
-  const query = `INSERT INTO questions (title, description, category) VALUES ($1, $2, $3)`;
+  const query = `INSERT INTO questions (title, description, category) VALUES ($1, $2, $3) RETURNING *`;
   const values = [question.title, question.description, question.category];
   const result = await connectionPool.query(query, values);
   return result.rows[0];
@@ -36,7 +36,7 @@ export const getQuestionById = async (id) => {
 
 // update question
 export const updateQuestion = async (id, question) => {
-  const query = `UPDATE questions SET title = $1, description = $2, category = $3 WHERE id = $4`;
+  const query = `UPDATE questions SET title = $1, description = $2, category = $3 WHERE id = $4 RETURNING *`;
   const value = [question.title, question.description, question.category, id];
   const result = await connectionPool.query(query, value);
   return result.rows[0];

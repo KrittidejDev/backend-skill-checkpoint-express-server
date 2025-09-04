@@ -22,6 +22,7 @@ app.get("/test", (req, res) => {
 app.use("/api/question", questionRoute);
 app.use("/api/answer", answerRoute);
 
-app.listen(port, () => {
-  console.log(`Server is running at ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running at ${port}`);
+// });
+export default app;

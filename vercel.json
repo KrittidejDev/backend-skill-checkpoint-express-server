@@ -1,5 +1,19 @@
 {
   "version": 2,
-  "builds": [{ "src": "app.mjs", "use": "@vercel/node" }],
-  "routes": [{ "src": "/(.*)", "dest": "app.mjs" }]
+  "builds": [
+    {
+      "src": "app.mjs",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api-docs/swagger.yaml",
+      "dest": "swagger.yaml"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "app.mjs"
+    }
+  ]
 }

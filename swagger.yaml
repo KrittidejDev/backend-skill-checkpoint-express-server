@@ -1,0 +1,310 @@
+openapi: 3.0.0
+info:
+  title: Q&A API
+  description: API สำหรับระบบคำถาม-คำตอบ พร้อมระบบโหวต
+  version: 1.0.0
+servers:
+  - url: http://localhost:4000/api
+    description: Local server
+
+paths:
+  /question/create:
+    post:
+      summary: สร้างคำถามใหม่
+      tags: [Questions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateQuestion"
+      responses:
+        "200":
+          description: Question created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+
+  /question:
+    get:
+      summary: ดึงคำถามทั้งหมด (ค้นหาด้วย title/category ได้)
+      tags: [Questions]
+      parameters:
+        - in: query
+          name: title
+          schema:
+            type: string
+        - in: query
+          name: category
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Question"
+
+  /question/{id}:
+    get:
+      summary: ดึงคำถามตาม ID
+      tags: [Questions]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Question detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+
+  /question/update/{id}:
+    put:
+      summary: แก้ไขคำถาม
+      tags: [Questions]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateQuestion"
+      responses:
+        "200":
+          description: Updated question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+
+  /question/delete/{id}:
+    delete:
+      summary: ลบคำถาม (รวมทั้งคำตอบและโหวตที่เกี่ยวข้อง)
+      tags: [Questions]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+
+  /question/{id}/vote:
+    post:
+      summary: โหวตคำถาม
+      tags: [Questions]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Vote"
+      responses:
+        "200":
+          description: Vote result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteResult"
+
+    get:
+      summary: รวมคะแนนโหวตของคำถาม
+      tags: [Questions]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Total vote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteResult"
+
+  /answer/create:
+    post:
+      summary: สร้างคำตอบใหม่
+      tags: [Answers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAnswer"
+      responses:
+        "200":
+          description: Answer created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Answer"
+
+  /answer/{questionId}:
+    get:
+      summary: ดึงคำตอบทั้งหมดของคำถาม
+      tags: [Answers]
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of answers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Answer"
+
+  /answer/delete/{answerId}:
+    delete:
+      summary: ลบคำตอบ
+      tags: [Answers]
+      parameters:
+        - in: path
+          name: answerId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted answer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Answer"
+
+  /answer/{id}/vote:
+    post:
+      summary: โหวตคำตอบ
+      tags: [Answers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Vote"
+      responses:
+        "200":
+          description: Vote result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteResult"
+
+    get:
+      summary: รวมคะแนนโหวตของคำตอบ
+      tags: [Answers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Total vote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteResult"
+
+components:
+  schemas:
+    Question:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+
+    CreateQuestion:
+      type: object
+      required: [title, description, category]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+
+    Answer:
+      type: object
+      properties:
+        id:
+          type: integer
+        question_id:
+          type: integer
+        content:
+          type: string
+
+    CreateAnswer:
+      type: object
+      required: [question_id, content]
+      properties:
+        question_id:
+          type: integer
+        content:
+          type: string
+
+    Vote:
+      type: object
+      required: [value]
+      properties:
+        value:
+          type: integer
+          enum: [1, -1]
+
+    VoteResult:
+      type: object
+      properties:
+        questionId:
+          type: integer
+        answerId:
+          type: integer
+        total_vote:
+          type: integer
